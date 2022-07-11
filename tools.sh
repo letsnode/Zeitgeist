@@ -42,12 +42,12 @@ install() {
 }
 update() {
 	printf_n "${C_LGn}Checking for update...${RES}"
-	status=`docker pull mantanetwork/calamari:latest`
+	status=`docker pull zeitgeistpm/zeitgeist-node-parachain:latest`
 	if ! grep -q "Image is up to date for" <<< "$status"; then
 		printf_n "${C_LGn}Updating...${RES}"
-		docker stop calamari_node
-		docker rm calamari_node
-		docker run -dit --network host -v $HOME/.calamari:/data --name calamari_node mantanetwork/calamari:latest   --base-path /data   --keystore-path /keystore   --name "$calamari_moniker"   --rpc-cors all   --collator   --prometheus-external   --   --prometheus-external   --telemetry-url "wss://api.telemetry.manta.systems/submit/ 0"
+		docker stop zeitgeist_node
+		docker rm zeitgeist_node
+		docker run -dit     --name zeitgeist_node     --restart always     -p 30333:30333     -p 9933:9933     -p 9944:9944     -v $HOME/zeitgeist/secret_ed25519:/zeitgeist/data/secret_ed25519      zeitgeistpm/zeitgeist-node-parachain:latest     --base-path /zeitgeist/data     --node-key-file /zeitgeist/data/secret_ed25519     --chain battery_station     --name "$zeitgeist_moniker"     --pruning archive
 	else
 		printf_n "${C_LGn}Node version is current!${RES}"
 	fi
