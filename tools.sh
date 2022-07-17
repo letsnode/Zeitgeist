@@ -47,7 +47,19 @@ update() {
 		printf_n "${C_LGn}Updating...${RES}"
 		docker stop zeitgeist_node
 		docker rm zeitgeist_node
-		docker run -dit     --name zeitgeist_node     --restart always     -p 30333:30333     -p 9933:9933     -p 9944:9944     -v $HOME/zeitgeist/secret_ed25519:/zeitgeist/data/secret_ed25519      zeitgeistpm/zeitgeist-node-parachain:latest     --base-path /zeitgeist/data     --node-key-file /zeitgeist/data/secret_ed25519     --chain battery_station     --name "$zeitgeist_moniker"     --pruning archive
+		docker run -dit --name zeitgeist_node --restart always --network host -v $HOME/.zeitgeist:/zeitgeist/data -u $(id -u ${USER}):$(id -g ${USER}) \
+			  zeitgeistpm/zeitgeist-node-parachain \
+			  -d /zeitgeist/data \
+			  --name "$zeitgeist_moniker" \
+			  --validator \
+			  --pruning archive \
+			  --state-cache-size 1 \
+			  --db-cache `bc <<< "$(cat /proc/meminfo | awk 'NR == 1 {print $2}')/2024"` \
+			  --in-peers 100 \
+			  --out-peers 100 \
+			  -- \
+			  --pruning 1000 \
+			  --name "$zeitgeist_moniker (Embedded Relay)"
 	else
 		printf_n "${C_LGn}Node version is current!${RES}"
 	fi
