@@ -1,5 +1,8 @@
 How to use:
 
+sudo apt update && sudo apt upgrade -y
+sudo apt install wget jq nano -y
+
 printf "[Unit]
 Description=Auto-updater
 After=network.target
